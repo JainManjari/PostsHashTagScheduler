@@ -18,6 +18,12 @@ module.exports.recalibrate = async (req, res) => {
       },
     });
 
+    posts = posts
+    .filter(({ content }) => content && content.length > 0)
+    .map(({ content }) => {
+      return content;
+    });
+
     if (posts.length == 0) {
       return res.status(200).json({
         date: {
