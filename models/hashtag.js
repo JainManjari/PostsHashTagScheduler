@@ -5,6 +5,7 @@ const hashtagSchema = new mongoose.Schema(
     keyword: {
       type: String,
       required: true,
+      unique: true
     },
     posts: [
       {

@@ -18,31 +18,34 @@ const getHashTagArray = (content) => {
   return hashtagArray;
 };
 
-const upsertHashTagArray = async (postId, hashtagArray) => {
+const upsertHashTagArray = async (postId, hashtagArray, hashTagMap) => {
   try {
     for (let hashTag of hashtagArray) {
-      let hashTagModel = await HashTag.findOne({
-        keyword: hashTag,
-      });
+      hashTag = hashTag.toLowerCase().trim();
+      let hashTagModel = hashTagMap[hashTag];
 
       if (!hashTagModel) {
-        hashTagModel = await HashTag.create({
+        hashTagModel = await HashTag.findOne({
           keyword: hashTag,
-          posts: [postId],
-          count: 1,
         });
+        if (!hashTagModel) {
+          hashTagModel = await HashTag.create({
+            keyword: hashTag,
+            posts: [postId],
+            count: 1,
+          });
+        }
+        hashTagMap[hashTag] = hashTagModel;
+        hashTagModel = hashTagMap[hashTag];
       }
 
       if (!hashTagModel.posts.includes(postId)) {
         hashTagModel.posts.push(postId);
         hashTagModel.count += 1;
+        hashTagMap[hashTag] = hashTagModel;
       }
-
-      const newvalues = {
-        $set: { posts: hashTagModel.posts, count: hashTagModel.count },
-      };
-      hashTagModel = await HashTag.updateOne({ keyword: hashTag }, newvalues);
     }
+    return hashTagMap;
   } catch (err) {
     console.log("error in updating hashtag ", err);
     throw err;
@@ -52,9 +55,9 @@ const upsertHashTagArray = async (postId, hashtagArray) => {
 module.exports.recalibrate = async (req, res) => {
   try {
     const endTime = moment();
-    const startTime = moment(endTime).subtract(2, "hours");
+    const startTime = moment(endTime).subtract(4, "hours");
 
-    // to find new posts created in the last 2 hours
+    // to find new posts created in the last 4 hours
     let posts = await Post.find({
       createdAt: {
         $gte: startTime.toDate(),
@@ -71,14 +74,71 @@ module.exports.recalibrate = async (req, res) => {
         },
       });
     }
-
+    let hashTagMap = {};
     for (let post of posts) {
       let hashtagArray = getHashTagArray(post.content);
-      upsertHashTagArray(post.id, hashtagArray);
+      let postId = post.id.toString();
+
+      for (let hashTag of hashtagArray) {
+        hashTag = hashTag.toLowerCase().trim().toString();
+        let hashTagModel = hashTagMap[hashTag];
+
+        if (!hashTagModel) {
+          hashTagModel = await HashTag.findOne({
+            keyword: hashTag,
+          });
+          if (!hashTagModel) {
+            hashTagModel = await HashTag.create({
+              keyword: hashTag,
+              posts: [postId],
+              count: 1,
+            });
+          }
+          hashTagMap[hashTag] = hashTagModel;
+          hashTagModel = hashTagMap[hashTag];
+        }
+
+        if (!hashTagModel.posts.includes(postId)) {
+          hashTagModel.posts.push(postId);
+          hashTagModel.count += 1;
+          hashTagMap[hashTag] = hashTagModel;
+        }
+      }
+    }
+
+    const hashTags = [];
+    for (let hashTag in hashTagMap) {
+      hashTags.push(hashTagMap[hashTag]);
+    }
+
+    const bulkOps = hashTags.map((obj) => {
+      return {
+        updateOne: {
+          filter: {
+            _id: obj._id,
+          },
+          update: {
+            posts: obj.posts,
+            count: obj.count,
+          },
+        },
+      };
+    });
+
+    await HashTag.bulkWrite(bulkOps);
+
+    let responseData = [];
+
+    for (let hashTag of hashTags) {
+      let hashTagObj = {};
+      hashTagObj.keyword = hashTag.keyword;
+      hashTagObj.count = hashTag.count;
+      responseData.push(hashTagObj);
     }
 
     return res.status(200).json({
       message: `Successfully recalibrated of posts of length ${posts.length} between ${startTime} and ${endTime}`,
+      data: responseData,
     });
   } catch (err) {
     let message = `Error in recalibrating hashtags ${err}`;
@@ -119,6 +179,43 @@ module.exports.getTopHashTags = async (req, res) => {
     });
   } catch (err) {
     let message = `Error in getting top hashtags ${err}`;
+    console.log(message);
+    return res.status(500).json({
+      message,
+    });
+  }
+};
+
+module.exports.searchByHashTag = async (req, res) => {
+  try {
+    let searchTerm = req.query.term;
+    if (!searchTerm || searchTerm.length <= 1) {
+      return res.status(400).json({
+        data: {
+          message: "Search Term is too small.",
+        },
+      });
+    }
+
+    console.log("searchTerm ", searchTerm);
+    let hashtags = await HashTag.find({
+      keyword: searchTerm,
+    })
+      .populate("posts")
+      .sort({ count: -1 });
+
+    let hashTagsData = hashtags.map((hashtag) => {
+      let posts = hashtag.posts.map((post) => post.content);
+      return { keyword: hashtag.keyword, count: hashtag.count, posts: posts };
+    });
+
+    return res.status(200).json({
+      data: {
+        hashTagsData,
+      },
+    });
+  } catch (err) {
+    let message = `Error in searching a hashtags ${err}`;
     console.log(message);
     return res.status(500).json({
       message,
