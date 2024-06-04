@@ -1,0 +1,176 @@
+{
+	"info": {
+		"_postman_id": "997a647f-af2d-449f-a9fd-b9a353e9fd09",
+		"name": "Post Hashtag",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "17793782"
+	},
+	"item": [
+		{
+			"name": "Posts",
+			"item": [
+				{
+					"name": "Create Posts",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\":\"JK Rowling\",\n    \"email\":\"jkr@gmail.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8000/posts",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"posts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all posts",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8000/posts/all",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"posts",
+								"all"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Hashtags",
+			"item": [
+				{
+					"name": "Recalibrate hashtags from posts",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"count\": 7\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8000/hashtags/recalibrate",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"hashtags",
+								"recalibrate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Top Hashtags",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Hershley\",\n    \"about\": \"Hi, I am Hershley. Nice to meet you!!\",\n    \"currentCity\": \"Hogwarts\",\n    \"homeTown\": \"Uk\",\n    \"birthday\": \"\",\n    \"fb\": \"\",\n    \"linkedin\": \"https://www.linkedin.com/in/manjarijain\",\n    \"quora\": \"\",\n    \"insta\": \"\",\n    \"utube\": \"\",\n    \"twitter\": \"\",\n    \"phone\": \"8753426612\",\n    \"website\": \"https://jainmanjari.github.io/\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8000/hashtags/top?limit=0",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"hashtags",
+								"top"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "0"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search by Hash Tag",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Hershley\",\n    \"about\": \"Hi, I am Hershley. Nice to meet you!!\",\n    \"currentCity\": \"Hogwarts\",\n    \"homeTown\": \"Uk\",\n    \"birthday\": \"\",\n    \"fb\": \"\",\n    \"linkedin\": \"https://www.linkedin.com/in/manjarijain\",\n    \"quora\": \"\",\n    \"insta\": \"\",\n    \"utube\": \"\",\n    \"twitter\": \"\",\n    \"phone\": \"8753426612\",\n    \"website\": \"https://jainmanjari.github.io/\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8000/hashtags/search?term=hello",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"hashtags",
+								"search"
+							],
+							"query": [
+								{
+									"key": "term",
+									"value": "hello"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
