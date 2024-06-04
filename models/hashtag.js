@@ -13,11 +13,15 @@ const hashtagSchema = new mongoose.Schema(
         // autopopulate:true
       },
     ],
+    count: {
+      type: Number,
+      required: true,
+    },
   },
   {
     timestamps: true,
   }
 );
 
-const HashTag = mongoose.model("hashtag", hashtagSchema);
+const HashTag = mongoose.model("HashTag", hashtagSchema);
 module.exports = HashTag;

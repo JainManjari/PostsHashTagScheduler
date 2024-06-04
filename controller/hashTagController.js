@@ -20,7 +20,6 @@ const getHashTagArray = (content) => {
 
 const upsertHashTagArray = async (postId, hashtagArray) => {
   try {
-    console.log("postId ", postId, hashtagArray);
     for (let hashTag of hashtagArray) {
       let hashTagModel = await HashTag.findOne({
         keyword: hashTag,
@@ -30,14 +29,18 @@ const upsertHashTagArray = async (postId, hashtagArray) => {
         hashTagModel = await HashTag.create({
           keyword: hashTag,
           posts: [postId],
+          count: 1,
         });
       }
 
       if (!hashTagModel.posts.includes(postId)) {
         hashTagModel.posts.push(postId);
+        hashTagModel.count += 1;
       }
 
-      const newvalues = { $set: { posts: hashTagModel.posts } };
+      const newvalues = {
+        $set: { posts: hashTagModel.posts, count: hashTagModel.count },
+      };
       hashTagModel = await HashTag.updateOne({ keyword: hashTag }, newvalues);
     }
   } catch (err) {
@@ -79,6 +82,43 @@ module.exports.recalibrate = async (req, res) => {
     });
   } catch (err) {
     let message = `Error in recalibrating hashtags ${err}`;
+    console.log(message);
+    return res.status(500).json({
+      message,
+    });
+  }
+};
+
+module.exports.getTopHashTags = async (req, res) => {
+  try {
+    let limit = req.query.limit;
+    if (isNaN(limit)) {
+      limit = 5;
+    }
+    if (limit <= 0) {
+      return res.status(400).json({
+        data: {
+          message: "Enter valid limit.",
+        },
+      });
+    }
+    let hashtags = await HashTag.find({})
+      .populate("posts")
+      .sort({ count: -1 })
+      .limit(limit);
+
+    let hashTagsData = hashtags.map((hashtag) => {
+      let posts = hashtag.posts.map((post) => post.content);
+      return { keyword: hashtag.keyword, count: hashtag.count, posts: posts };
+    });
+
+    return res.status(200).json({
+      data: {
+        hashTagsData,
+      },
+    });
+  } catch (err) {
+    let message = `Error in getting top hashtags ${err}`;
     console.log(message);
     return res.status(500).json({
       message,
