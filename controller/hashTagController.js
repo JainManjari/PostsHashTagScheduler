@@ -54,9 +54,14 @@ const upsertHashTagArray = async (postId, hashtagArray, hashTagMap) => {
 };
 
 module.exports.recalibrate = async (req, res) => {
+  console.log("-------------STARTED----------------");
   try {
     const endTime = moment();
     const startTime = moment(endTime).subtract(4, "hours");
+
+    console.log(
+      `Started recalibrating hastags between ${startTime} and ${endTime}`
+    );
 
     // to find new posts created in the last 4 hours
     let posts = await Post.find({
@@ -75,9 +80,13 @@ module.exports.recalibrate = async (req, res) => {
         },
       });
     }
+
+    console.log(`Posts found of length ${posts.length}`);
     let hashTagMap = {};
     for (let post of posts) {
+      console.log("Started finding hashtags for post ", post.content);
       let hashtagArray = getHashTagArray(post.content);
+      console.log("hashtags found ", hashtagArray);
       let postId = post.id.toString();
 
       for (let hashTag of hashtagArray) {
@@ -105,6 +114,7 @@ module.exports.recalibrate = async (req, res) => {
           hashTagMap[hashTag] = hashTagModel;
         }
       }
+      console.log("Completed computing hashtags for post ", post.content);
     }
 
     const hashTags = [];
@@ -128,6 +138,10 @@ module.exports.recalibrate = async (req, res) => {
 
     await HashTag.bulkWrite(bulkOps);
 
+    console.log(
+      `Completed upserting in db for all hashtags found in posts of length ${posts.length} between ${startTime} and ${endTime}`
+    );
+
     let responseData = [];
 
     for (let hashTag of hashTags) {
@@ -136,10 +150,11 @@ module.exports.recalibrate = async (req, res) => {
       hashTagObj.count = hashTag.count;
       responseData.push(hashTagObj);
     }
-
     return res.status(200).json({
-      message: `Successfully recalibrated of posts of length ${posts.length} between ${startTime} and ${endTime}`,
-      data: responseData,
+      data: {
+        message: `Successfully recalibrated of posts of length ${posts.length} between ${startTime} and ${endTime}`,
+        hashTags: responseData,
+      },
     });
   } catch (err) {
     let message = `Error in recalibrating hashtags ${err}`;
@@ -147,6 +162,8 @@ module.exports.recalibrate = async (req, res) => {
     return res.status(500).json({
       message,
     });
+  } finally {
+    console.log("-------------COMPLETED--------------------");
   }
 };
 

@@ -3,6 +3,10 @@ const path = require('path');
 const port = 8000;
 
 const db = require("./config/mongoose");
+const hashTagJob = require('./jobs/hashTagJob');
+
+// starting hashTagJob
+hashTagJob.hashTagRecalibrate();
 
 const app = express();
 
