@@ -271,9 +271,10 @@ RESPONSE
 ## Running project
 
 1. git clone https://github.com/JainManjari/PostsHashTagScheduler.git
-2. npm install
-3. npm start
-4. Open browser and go to http://localhost:8000
+2. Change mongoose.js in ./config to your mongodb atlas credentials.
+3. npm install
+4. npm start
+5. Open browser and go to http://localhost:8000
 <br>
 <br>
 
