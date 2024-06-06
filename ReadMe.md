@@ -87,7 +87,7 @@ Implementing a service that keeps track of the hashtags ('#') used in posts.
 
 ### High Level of API Designs
 1. Create a post:
-```json
+```
 POST '/posts'
 HEADER 'Content-Type: application/json'
 BODY '{
@@ -115,7 +115,7 @@ RESPONSE
 ```
 
 3. Recalibrating hashtags from recently created posts
-```json
+```
 GET '/hashtags/recalibrate'
 HEADER'Content-Type: application/json' 
 RESPONSE
@@ -141,7 +141,7 @@ RESPONSE
 ```
 
 4. Get top hashtags used:
-```json
+```
 GET '/hashtags/top?limit=3'
 RESPONSE
 {
@@ -181,7 +181,7 @@ RESPONSE
 ```
 
 4. Search for a hashtag
-```json
+```
 GET '/hashtags/search?term=thing'
 RESPONSE
 {
@@ -229,40 +229,41 @@ RESPONSE
 <br>
 
 ### Flowchart
-
+<img width="802" alt="Screenshot 2024-06-06 at 8 57 42 AM" src="https://github.com/JainManjari/PostsHashTagScheduler/assets/54873596/37246755-0bbd-4d66-b4e8-7966706e428c">
 <br>
 <br>
 
 
 ### Current Architecture
-
+<img width="1127" alt="Screenshot 2024-06-06 at 9 04 10 AM" src="https://github.com/JainManjari/PostsHashTagScheduler/assets/54873596/57b58ff0-009d-43cf-881a-7f1d35e70b7b">
 <br>
 <br>
 
 ### Future improvements in the Current Architecture
-
+<img width="1104" alt="Screenshot 2024-06-06 at 9 17 45 AM" src="https://github.com/JainManjari/PostsHashTagScheduler/assets/54873596/d5d98537-4a3e-4406-b595-4051f4fd4196">
 <br>
 <br>
 
 ### Testing 
 <br>
 1. Create a post
-
+<br>
+<img width="1004" alt="Screenshot 2024-06-06 at 9 18 08 AM" src="https://github.com/JainManjari/PostsHashTagScheduler/assets/54873596/25ebeb1c-7043-4a14-a040-e9e90068a296">
 <br/>
 <br/>
 2. Scheduler running in the background
 <br/>
-
+<img width="1288" alt="Screenshot 2024-06-06 at 9 18 38 AM" src="https://github.com/JainManjari/PostsHashTagScheduler/assets/54873596/1cdfa8df-78a2-4367-870d-c09f5fd5e931">
 <br/>
 <br/>
-3. Searching a hashtag
+3. Searching for a hashtag
 <br/>
-
+<img width="830" alt="Screenshot 2024-06-06 at 9 24 09 AM" src="https://github.com/JainManjari/PostsHashTagScheduler/assets/54873596/00a93880-5876-49af-8320-c3e0449d859f">
 <br/>
 <br>
-4. Getting top 3 hashtags
+4. Getting the top 3 hashtags
 <br/>
-
+<img width="955" alt="Screenshot 2024-06-06 at 9 24 48 AM" src="https://github.com/JainManjari/PostsHashTagScheduler/assets/54873596/57892bcb-86e5-4553-9726-e446977d30ba">
 <br/>
 <br>
 
