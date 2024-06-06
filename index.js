@@ -5,9 +5,6 @@ const port = 8000;
 const db = require("./config/mongoose");
 const hashTagJob = require('./jobs/hashTagJob');
 
-// starting hashTagJob
-hashTagJob.hashTagRecalibrate();
-
 const app = express();
 
 
@@ -19,6 +16,8 @@ app.use(express.static("assets"));
 
 app.use("/", require("./routes"));
 
+// starting hashTagJob
+hashTagJob.hashTagRecalibrate();
 
 app.listen(port, function(err){
     if(err) {
