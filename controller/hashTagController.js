@@ -9,6 +9,7 @@ const getHashTagArray = (content) => {
   for (let hashtag of hashtags) {
     let hashTagKeys = hashtag.split("#");
     for (let hashTagKey of hashTagKeys) {
+      hashTagKey = hashTagKey.replace(/[^a-zA-Z0-9]/g, "");
       if (hashTagKey.length > 0) {
         hashtagArray.push(hashTagKey);
       }
@@ -189,6 +190,7 @@ module.exports.getTopHashTags = async (req, res) => {
 module.exports.searchByHashTag = async (req, res) => {
   try {
     let searchTerm = req.query.term;
+    console.log("search", searchTerm);
     if (!searchTerm || searchTerm.length <= 1) {
       return res.status(400).json({
         data: {
@@ -196,10 +198,9 @@ module.exports.searchByHashTag = async (req, res) => {
         },
       });
     }
-
-    console.log("searchTerm ", searchTerm);
+    searchTerm = searchTerm.toLowerCase();
     let hashtags = await HashTag.find({
-      keyword: searchTerm,
+      keyword: { $regex: searchTerm },
     })
       .populate("posts")
       .sort({ count: -1 });
